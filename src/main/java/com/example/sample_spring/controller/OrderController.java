@@ -1,5 +1,6 @@
 package com.example.sample_spring.controller;
 
+import com.example.sample_spring.dto.OrderSummaryDTO;
 import com.example.sample_spring.model.Order;
 import com.example.sample_spring.model.User;
 import com.example.sample_spring.service.OrderService;
@@ -91,5 +92,11 @@ public class OrderController {
             @RequestParam String status) {
         orderService.updateOrderStatus(id, status);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<OrderSummaryDTO>> getOrderSummaries() {
+        List<OrderSummaryDTO> summaries = orderService.getOrderSummaries();
+        return ResponseEntity.ok(summaries);
     }
 }

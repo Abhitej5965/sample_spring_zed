@@ -1,5 +1,6 @@
 package com.example.sample_spring.service.impl;
 
+import com.example.sample_spring.dto.OrderSummaryDTO;
 import com.example.sample_spring.exception.ResourceNotFoundException;
 import com.example.sample_spring.model.Order;
 import com.example.sample_spring.model.User;
@@ -8,8 +9,10 @@ import com.example.sample_spring.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -29,7 +32,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order updateOrder(Long id, Order orderDetails) {
         Order order = getOrderById(id);
-
         order.setUser(orderDetails.getUser());
         order.setTotalAmount(orderDetails.getTotalAmount());
         order.setStatus(orderDetails.getStatus());
@@ -37,7 +39,6 @@ public class OrderServiceImpl implements OrderService {
         order.setProducts(orderDetails.getProducts());
         order.setPaymentMethod(orderDetails.getPaymentMethod());
         order.setTrackingNumber(orderDetails.getTrackingNumber());
-
         return orderRepository.save(order);
     }
 
@@ -83,5 +84,20 @@ public class OrderServiceImpl implements OrderService {
         Order order = getOrderById(id);
         order.setStatus(status);
         orderRepository.save(order);
+    }
+
+    @Override
+    public List<OrderSummaryDTO> getOrderSummaries() {
+        return orderRepository.findOrderSummaries().stream()
+                .map(projection -> new OrderSummaryDTO(
+                        projection.getOrderId(),
+                        projection.getUsername(),
+                        projection.getOrderDate(),
+                        BigDecimal.valueOf(projection.getTotalAmount()),
+                        projection.getStatus(),
+                        projection.getProductNames(),
+                        projection.getTotalItems()
+                ))
+                .collect(Collectors.toList());
     }
 }

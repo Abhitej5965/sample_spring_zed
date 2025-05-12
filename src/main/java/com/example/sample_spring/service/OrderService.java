@@ -1,5 +1,6 @@
 package com.example.sample_spring.service;
 
+import com.example.sample_spring.dto.OrderSummaryDTO;
 import com.example.sample_spring.model.Order;
 import com.example.sample_spring.model.User;
 
@@ -17,4 +18,5 @@ public interface OrderService {
     List<Order> getOrdersByDateRange(LocalDateTime startDate, LocalDateTime endDate);
     List<Order> getUserOrdersOrderedByDateDesc(User user);
     void updateOrderStatus(Long id, String status);
+    List<OrderSummaryDTO> getOrderSummaries();
 }
