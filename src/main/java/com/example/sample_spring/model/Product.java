@@ -38,7 +38,7 @@ public class Product {
     private String category;
 
     @Lob
-    @Column(name = "metadata", columnDefinition = "LONGBLOB")
+    @Column(name = "metadata", columnDefinition = "BYTEA")
     private byte[] metadata;
     
     @ManyToMany(mappedBy = "products")
