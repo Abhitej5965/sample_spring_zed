@@ -36,6 +36,19 @@ public class Product {
     
     @Column
     private String category;
+
+    @Lob
+    @Column(name = "metadata", columnDefinition = "LONGBLOB")
+    private byte[] metadata;
+
+    @Column(name = "metadata_name")
+    private String metadataName;
+
+    @Column(name = "metadata_type")
+    private String metadataType;
+
+    @Column(name = "metadata_size")
+    private Long metadataSize;
     
     @ManyToMany(mappedBy = "products")
     private List<Order> orders;

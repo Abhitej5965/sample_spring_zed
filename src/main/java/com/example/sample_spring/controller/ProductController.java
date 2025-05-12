@@ -1,11 +1,17 @@
 package com.example.sample_spring.controller;
 
+import com.example.sample_spring.dto.ProductDTO;
 import com.example.sample_spring.model.Product;
 import com.example.sample_spring.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,16 +28,26 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product newProduct = productService.createProduct(product);
-        return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> createProduct(@ModelAttribute ProductDTO productDTO) {
+        try {
+            Product newProduct = productService.createProduct(productDTO);
+            return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
-        Product updatedProduct = productService.updateProduct(id, productDetails);
-        return ResponseEntity.ok(updatedProduct);
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable Long id,
+            @ModelAttribute ProductDTO productDTO) {
+        try {
+            Product updatedProduct = productService.updateProduct(id, productDTO);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -83,6 +99,41 @@ public class ProductController {
             @PathVariable Long id,
             @RequestParam Integer quantity) {
         productService.updateStock(id, quantity);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/metadata")
+    public ResponseEntity<Resource> downloadMetadata(@PathVariable Long id) {
+        Product product = productService.getProductById(id);
+        
+        if (product.getMetadata() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ByteArrayResource resource = new ByteArrayResource(product.getMetadata());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + product.getMetadataName() + "\"")
+                .contentType(MediaType.parseMediaType(product.getMetadataType()))
+                .contentLength(product.getMetadataSize())
+                .body(resource);
+    }
+
+    @PostMapping("/{id}/metadata")
+    public ResponseEntity<Void> uploadMetadata(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            productService.updateProductMetadata(id, file);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/{id}/metadata")
+    public ResponseEntity<Void> deleteMetadata(@PathVariable Long id) {
+        productService.deleteProductMetadata(id);
         return ResponseEntity.ok().build();
     }
 }
