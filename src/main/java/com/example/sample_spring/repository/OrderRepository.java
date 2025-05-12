@@ -24,7 +24,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                 o.order_date as orderDate,
                 o.total_amount as totalAmount,
                 o.status as status,
-                GROUP_CONCAT(p.name SEPARATOR ', ') as productNames,
+                STRING_AGG(p.name, ', ') as productNames,
                 SUM(op.quantity) as totalItems
             FROM orders o
             JOIN users u ON o.user_id = u.id
