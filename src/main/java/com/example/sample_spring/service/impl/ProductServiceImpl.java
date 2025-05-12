@@ -6,9 +6,7 @@ import com.example.sample_spring.repository.ProductRepository;
 import com.example.sample_spring.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -82,13 +80,6 @@ public class ProductServiceImpl implements ProductService {
     public void updateStock(Long id, Integer quantity) {
         Product product = getProductById(id);
         product.setStockQuantity(quantity);
-        productRepository.save(product);
-    }
-
-    @Override
-    public void updateProductMetadata(Long id, MultipartFile file) throws IOException {
-        Product product = getProductById(id);
-        product.setMetadata(file.getBytes());
         productRepository.save(product);
     }
 

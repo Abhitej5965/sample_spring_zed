@@ -18,6 +18,5 @@ public interface ProductService {
     List<Product> searchProducts(String keyword);
     List<Product> getProductsInStock();
     void updateStock(Long id, Integer quantity);
-    void updateProductMetadata(Long id, MultipartFile file) throws IOException;
     byte[] getProductMetadata(Long id);
 }
