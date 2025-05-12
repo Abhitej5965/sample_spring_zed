@@ -15,4 +15,9 @@ public class WebController {
     public String register() {
         return "redirect:/registration.html";
     }
+
+    @GetMapping("/products/create")
+    public String createProduct() {
+        return "redirect:/product-form.html";
+    }
 }

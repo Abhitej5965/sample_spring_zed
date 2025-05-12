@@ -31,21 +31,11 @@ public class ProductController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Product> createProduct(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("name") String name,
-            @RequestParam("description") String description,
-            @RequestParam("price") BigDecimal price,
-            @RequestParam("stockQuantity") Integer stockQuantity,
-            @RequestParam("category") String category) {
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("product") String productJson) {
         try {
-            Product product = new Product();
-            product.setName(name);
-            product.setDescription(description);
-            product.setPrice(price);
-            product.setStockQuantity(stockQuantity);
-            product.setCategory(category);
+            Product product = objectMapper.readValue(productJson, Product.class);
             product.setMetadata(file.getBytes());
-            
             Product newProduct = productService.createProduct(product);
             return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
         } catch (Exception e) {
