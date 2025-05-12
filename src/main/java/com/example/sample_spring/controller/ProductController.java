@@ -2,7 +2,6 @@ package com.example.sample_spring.controller;
 
 import com.example.sample_spring.model.Product;
 import com.example.sample_spring.service.ProductService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -21,20 +20,17 @@ import java.util.Map;
 public class ProductController {
 
     private final ProductService productService;
-    private final ObjectMapper objectMapper;
 
     @Autowired
-    public ProductController(ProductService productService, ObjectMapper objectMapper) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
-        this.objectMapper = objectMapper;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Product> createProduct(
             @RequestPart("file") MultipartFile file,
-            @RequestPart("product") String productJson) {
+            @RequestPart("product") Product product) {
         try {
-            Product product = objectMapper.readValue(productJson, Product.class);
             product.setMetadata(file.getBytes());
             Product newProduct = productService.createProduct(product);
             return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
