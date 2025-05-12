@@ -8,7 +8,7 @@ public class WebController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/registration.html";
+        return "redirect:/index.html";
     }
 
     @GetMapping("/register")
